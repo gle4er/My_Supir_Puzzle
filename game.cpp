@@ -2,12 +2,19 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <iostream>
 
 #include "game.h"
 
 void Game::setTiles(std::string image, int row, int col)
 {
     SDL_Surface* surf = IMG_Load(image.c_str());
+
+    if (surf == nullptr)
+        std::cout << IMG_GetError() << std::endl;
+    else
+        std::cout << "Tiling image" << std::endl;
+
     int width = surf->w;
     int height = surf->h;
     int clipPerRow = row;
@@ -44,10 +51,17 @@ void Game::setTiles(std::string image, int row, int col)
         while(SDL_PollEvent(&e)) if(e.type == SDL_QUIT) quit = 1;
         SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
         SDL_RenderClear(gRenderer);
-        for(int i=0; i<clipPerRow; i++) {
-            for(int j=0;j<clipPerColumn;j++) {
-                SDL_Rect rect = {x+i*width/clipPerRow,y+j*height/clipPerColumn, width/clipPerRow, height/clipPerColumn};
-                SDL_RenderCopy(gRenderer,tiles[i * clipPerColumn + j],NULL,&rect);
+        for(int i = 0; i < clipPerRow; i++) {
+            for(int j = 0; j < clipPerColumn; j++) {
+
+                SDL_Rect rect = {
+                    x + i * width / clipPerRow + j,
+                    y + j * height/clipPerColumn + j, 
+                    width / clipPerRow, 
+                    height / clipPerColumn
+                };
+
+                SDL_RenderCopy(gRenderer,tiles[i * clipPerColumn + j], NULL, &rect);
             }
         }
         SDL_RenderPresent(gRenderer);
