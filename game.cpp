@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <random>
 
 #include "game.h"
 
@@ -21,6 +22,16 @@ void Game::setTiles(std::string image, int row, int col)
     SDL_Texture* texture = SDL_CreateTextureFromSurface(gRenderer, surf);
     SDL_FreeSurface(surf);
 
+    int textureWidth = IMAGE_WIDTH / this->clipPerRow;
+    int textureHeight = IMAGE_HEIGHT / this->clipPerColumn;
+
+    std::default_random_engine gen;
+    gen.seed(std::random_device()());
+    std::uniform_int_distribution<int> 
+        randX(textureWidth, SCREEN_WIDTH - textureWidth);
+    std::uniform_int_distribution<int> 
+        randY(textureHeight, SCREEN_HEIGHT - textureHeight);
+
     for (int i = 0; i < clipPerRow; i++) {
         for (int j = 0; j < clipPerColumn; j++) {
             SDL_Texture *clip = 
@@ -33,14 +44,15 @@ void Game::setTiles(std::string image, int row, int col)
             SDL_Rect rect = { 
                 i * IMAGE_WIDTH / this->clipPerRow, 
                 j * IMAGE_HEIGHT / this->clipPerColumn, 
-                IMAGE_WIDTH / this->clipPerRow, 
-                IMAGE_HEIGHT / this->clipPerColumn 
+                textureWidth,
+                textureHeight
             };
 
             SDL_SetRenderTarget(gRenderer, clip);
             SDL_RenderCopy(gRenderer, texture, &rect, NULL);
 
-            this->tiles.push_back(new Tile(clip, rect.x + j, rect.y + i));
+
+            this->tiles.push_back(new Tile(clip, randX(gen), randY(gen)));
 
         }
     }
@@ -63,8 +75,8 @@ void Game::puzzle()
                 Tile *tmp_tile = this->tiles[i * clipPerColumn + j];
 
                 SDL_Rect rect = {
-                    tmp_tile->x + 100,
-                    tmp_tile->y + 100,
+                    tmp_tile->x,
+                    tmp_tile->y,
                     IMAGE_WIDTH / this->clipPerRow, 
                     IMAGE_HEIGHT / this->clipPerColumn
                 };
