@@ -51,8 +51,12 @@ void Game::setTiles(std::string image, int row, int col)
             SDL_SetRenderTarget(gRenderer, clip);
             SDL_RenderCopy(gRenderer, texture, &rect, NULL);
 
+            int x = randX(gen),
+                y = randY(gen);
+            rect.x = x;
+            rect.y = y;
 
-            this->tiles.push_back(new Tile(clip, randX(gen), randY(gen)));
+            this->tiles.push_back(new Tile(clip, rect));
 
         }
     }
@@ -60,13 +64,60 @@ void Game::setTiles(std::string image, int row, int col)
     std::cout << "Tiling complete" << std::endl;
 }
 
+int Game::eventHandle()
+{
+    static int movedTile = -1;
+
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT) {
+            std::cout << "here" << std::endl;
+            return 1;
+        } 
+
+        else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT) &&
+                e.type == SDL_MOUSEMOTION) {
+            if (movedTile == -1)
+                break;
+            int x = e.motion.x, 
+                y = e.motion.y;
+            tiles[movedTile]->rect.x = x;
+            tiles[movedTile]->rect.y = y;
+            std::cout << x << " " << y << std::endl;
+        }
+
+        else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            int x, y; 
+            SDL_GetMouseState(&x, &y);
+            for (int i = 0; i < (int) tiles.size(); i++) {
+                SDL_Rect area = tiles[i]->rect;
+                int xLow = area.x,
+                    xHigh = area.x + area.w,
+                    yLow = area.y,
+                    yHigh = area.y + area.h;
+
+                if (xLow < x && x < xHigh) {
+                    if (yLow < y && y < yHigh) {
+                        std::cout << "got img " << i << ": "
+                            << x << " " << y << std::endl;
+                        movedTile = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        else if (e.type == SDL_MOUSEBUTTONUP)
+            movedTile = -1; 
+
+    }
+    return 0;
+}
+
 void Game::puzzle()
 {
     SDL_SetRenderTarget(gRenderer, NULL);
-    bool quit = false;
-    while(!quit) {
-        SDL_Event e;
-        while(SDL_PollEvent(&e)) if(e.type == SDL_QUIT) quit = 1;
+    while(!eventHandle()) {
         SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
         SDL_RenderClear(gRenderer);
         for(int i = 0; i < this->clipPerRow; i++) {
@@ -75,8 +126,8 @@ void Game::puzzle()
                 Tile *tmp_tile = this->tiles[i * clipPerColumn + j];
 
                 SDL_Rect rect = {
-                    tmp_tile->x,
-                    tmp_tile->y,
+                    tmp_tile->rect.x,
+                    tmp_tile->rect.y,
                     IMAGE_WIDTH / this->clipPerRow, 
                     IMAGE_HEIGHT / this->clipPerColumn
                 };

@@ -18,11 +18,10 @@ class Game
 
         struct Tile {
             SDL_Texture *clip;
-            int x;
-            int y;
+            SDL_Rect rect;
 
-            Tile(SDL_Texture *_clip, int _x, int _y) :
-                clip(_clip), x(_x), y(_y) {};
+            Tile(SDL_Texture *_clip, SDL_Rect _rect) :
+                clip(_clip), rect(_rect) {}
         };
 
         std::vector<Tile *> tiles;
@@ -32,6 +31,7 @@ class Game
 
         void setTiles(std::string image, int rows, int cols);
         void puzzle();
+        int eventHandle();
 
     public:
         Game();
