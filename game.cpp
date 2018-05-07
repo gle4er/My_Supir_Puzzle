@@ -71,19 +71,17 @@ int Game::eventHandle()
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
-            std::cout << "here" << std::endl;
             return 1;
         } 
 
-        else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT) &&
+        if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT) &&
                 e.type == SDL_MOUSEMOTION) {
             if (movedTile == -1)
                 break;
-            int x = e.motion.x, 
-                y = e.motion.y;
-            tiles[movedTile]->rect.x = x;
-            tiles[movedTile]->rect.y = y;
-            std::cout << x << " " << y << std::endl;
+            int x = e.motion.xrel, 
+                y = e.motion.yrel;
+            tiles[movedTile]->rect.x += x;
+            tiles[movedTile]->rect.y += y;
         }
 
         else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -98,8 +96,6 @@ int Game::eventHandle()
 
                 if (xLow < x && x < xHigh) {
                     if (yLow < y && y < yHigh) {
-                        std::cout << "got img " << i << ": "
-                            << x << " " << y << std::endl;
                         movedTile = i;
                         break;
                     }
@@ -107,7 +103,7 @@ int Game::eventHandle()
             }
         }
 
-        else if (e.type == SDL_MOUSEBUTTONUP)
+        if (e.type == SDL_MOUSEBUTTONUP)
             movedTile = -1; 
 
     }
