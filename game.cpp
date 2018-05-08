@@ -1,9 +1,11 @@
+#include <iostream>
 #include <string>
 #include <vector>
+#include <random>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <iostream>
-#include <random>
+#include <SDL2/SDL_ttf.h>
 
 #include "game.h"
 
@@ -110,7 +112,7 @@ int Game::eventHandle()
     return 0;
 }
 
-void Game::draw()
+void Game::drawPuzzle()
 {
     int ticksPresent = SDL_GetTicks();
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
@@ -145,8 +147,83 @@ void Game::puzzle()
     while (!exit) {
         if (eventHandle() == 1)
             exit = true;
-        draw();
+        drawPuzzle();
     }
+}
+
+void Game::menu()
+{
+    SDL_SetRenderDrawColor(gRenderer, 0x26, 0x24, 0x5D, 0x00);
+	SDL_RenderClear(gRenderer);
+    SDL_RenderPresent(gRenderer);
+
+    if (TTF_Init() == -1)
+        std::cout << "SDL_ttf Error: " << TTF_GetError();
+    TTF_Font* font = TTF_OpenFont("/usr/share/fonts/TTF/Ubuntu-R.ttf", 20);
+    SDL_Color white = {255, 255, 255, 255};
+
+    std::string msg = "Choose picture";
+    SDL_Surface *msgSurf = TTF_RenderText_Blended(font, msg.c_str(), white);
+    SDL_Texture *pictMsg = SDL_CreateTextureFromSurface(gRenderer, msgSurf);
+    SDL_Rect pictMsgRect = {
+        100, 100,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_FreeSurface(msgSurf);
+
+    msg = "Choose pieces";
+    msgSurf = TTF_RenderText_Blended(font, msg.c_str(), white);
+    SDL_Texture *pieceMsg = SDL_CreateTextureFromSurface(gRenderer, msgSurf);
+    SDL_Rect pieceMsgRect = {
+        550, 100,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_FreeSurface(msgSurf);
+
+    msg = "<";
+    msgSurf = TTF_RenderText_Blended(font, msg.c_str(), white);
+    SDL_Texture *leftArrow = SDL_CreateTextureFromSurface(gRenderer, msgSurf);
+    SDL_Rect leftRectOne = {
+        30, 250,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_Rect leftRectTwo = {
+        580, 250,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_FreeSurface(msgSurf);
+
+    msg = ">";
+    msgSurf = TTF_RenderText_Blended(font, msg.c_str(), white);
+    SDL_Texture *righArrow = SDL_CreateTextureFromSurface(gRenderer, msgSurf);
+    SDL_Rect rightRectOne = {
+        300, 250,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_Rect rightRectTwo = {
+        640, 250,
+        msgSurf->w, msgSurf->h
+    };
+    SDL_FreeSurface(msgSurf);
+
+    SDL_RenderCopy(gRenderer, pictMsg, NULL, &pictMsgRect);
+    SDL_RenderCopy(gRenderer, pieceMsg, NULL, &pieceMsgRect);
+    SDL_RenderCopy(gRenderer, leftArrow, NULL, &leftRectOne);
+    SDL_RenderCopy(gRenderer, leftArrow, NULL, &leftRectTwo);
+    SDL_RenderCopy(gRenderer, righArrow, NULL, &rightRectOne);
+    SDL_RenderCopy(gRenderer, righArrow, NULL, &rightRectTwo);
+
+    bool exit = false;
+    while (!exit) {
+        if (eventHandle() == 1)
+            exit = true;
+
+        SDL_RenderPresent(gRenderer);
+        SDL_Delay(32);
+    }
+
+    SDL_DestroyTexture(pictMsg);
+    SDL_DestroyTexture(pieceMsg);
 }
 
 Game::Game()
@@ -159,7 +236,5 @@ Game::Game()
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-    setTiles("./1.jpg", 8, 7);
-
-    puzzle();
+    menu();
 }

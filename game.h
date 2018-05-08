@@ -32,7 +32,8 @@ class Game
 
         void setTiles(std::string image, int rows, int cols);
         int eventHandle();
-        void draw();
+        void drawPuzzle();
+        void menu();
         void puzzle();
 
     public:
