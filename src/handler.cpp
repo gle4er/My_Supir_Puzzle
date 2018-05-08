@@ -27,7 +27,6 @@ action Handler::getPuzzleHandle()
                 y = e.motion.yrel;
             tiles[movedTile]->rect.x += x;
             tiles[movedTile]->rect.y += y;
-            return PUZZLEMOVE;
         }
 
         else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -47,13 +46,10 @@ action Handler::getPuzzleHandle()
                     }
                 }
             }
-
-            return PUZZLECHOOSE;
         }
 
         if (e.type == SDL_MOUSEBUTTONUP) {
             movedTile = -1; 
-            return PUZZLEDROP;
         }
 
     }
