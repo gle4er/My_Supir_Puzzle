@@ -7,8 +7,9 @@
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const int IMAGE_WIDTH = 220;
-const int IMAGE_HEIGHT = 220;
+const int IMAGE_WIDTH = 440;
+const int IMAGE_HEIGHT = 440;
+const int TICK_LIMIT = 1000 / 60;
 
 class Game
 {
@@ -30,8 +31,9 @@ class Game
             clipPerColumn;
 
         void setTiles(std::string image, int rows, int cols);
-        void puzzle();
         int eventHandle();
+        void draw();
+        void puzzle();
 
     public:
         Game();

@@ -110,28 +110,42 @@ int Game::eventHandle()
     return 0;
 }
 
+void Game::draw()
+{
+    int ticksPresent = SDL_GetTicks();
+    SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
+    SDL_RenderClear(gRenderer);
+    for (int i = 0; i < this->clipPerRow; i++) {
+        for (int j = 0; j < this->clipPerColumn; j++) {
+
+            Tile *tmp_tile = this->tiles[i * clipPerColumn + j];
+
+            SDL_Rect rect = {
+                tmp_tile->rect.x,
+                tmp_tile->rect.y,
+                IMAGE_WIDTH / this->clipPerRow, 
+                IMAGE_HEIGHT / this->clipPerColumn
+            };
+
+            SDL_RenderCopy(gRenderer, tmp_tile->clip, NULL, &rect);
+        }
+    }
+
+    SDL_RenderPresent(gRenderer);
+
+    ticksPresent = SDL_GetTicks() - ticksPresent;
+    if (ticksPresent < TICK_LIMIT)
+        SDL_Delay(TICK_LIMIT - ticksPresent);
+}
+
 void Game::puzzle()
 {
     SDL_SetRenderTarget(gRenderer, NULL);
-    while(!eventHandle()) {
-        SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
-        SDL_RenderClear(gRenderer);
-        for(int i = 0; i < this->clipPerRow; i++) {
-            for(int j = 0; j < this->clipPerColumn; j++) {
-
-                Tile *tmp_tile = this->tiles[i * clipPerColumn + j];
-
-                SDL_Rect rect = {
-                    tmp_tile->rect.x,
-                    tmp_tile->rect.y,
-                    IMAGE_WIDTH / this->clipPerRow, 
-                    IMAGE_HEIGHT / this->clipPerColumn
-                };
-
-                SDL_RenderCopy(gRenderer, tmp_tile->clip, NULL, &rect);
-            }
-        }
-        SDL_RenderPresent(gRenderer);
+    bool exit = false;
+    while (!exit) {
+        if (eventHandle() == 1)
+            exit = true;
+        draw();
     }
 }
 
@@ -144,6 +158,8 @@ Game::Game()
             SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
     setTiles("./1.jpg", 8, 7);
+
     puzzle();
 }
