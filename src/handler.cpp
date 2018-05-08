@@ -67,6 +67,29 @@ action Handler::getMenuHandle()
         if (e.type == SDL_QUIT) {
             return EXIT;
         } 
+
+        else if (e.button.button == SDL_BUTTON(SDL_BUTTON_LEFT) &&
+                e.type == SDL_MOUSEBUTTONUP) {
+            int x, y; 
+            SDL_GetMouseState(&x, &y);
+            std::cout << x << " " << y << std::endl;
+            if (30 < x && x < 35 &&
+                250 < y && y < 275)
+                return PICT_CH_BACK;
+            else if (300 < x && x < 305 &&
+                    250 < y && y < 275)
+                return PICT_CH_FRONT;
+            else if (580 < x && x < 585 &&
+                    250 < y && y < 275)
+                return PIE_CH_BACK;
+            else if (640 < x && x < 645 &&
+                    250 < y && y < 275)
+                return PIE_CH_FRONT;
+            else if (380 < x && x < 420 &&
+                    450 < y && y < 480)
+                return START;
+        }
+
     }
     return UNDEFINED;
 }

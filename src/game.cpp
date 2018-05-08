@@ -71,6 +71,7 @@ void Game::setTiles(std::string image, int row, int col)
 void Game::drawPuzzle()
 {
     int ticksPresent = SDL_GetTicks();
+
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00,0x00,0x00);
     SDL_RenderClear(gRenderer);
     for (int i = 0; i < this->clipPerRow; i++) {
@@ -119,9 +120,30 @@ Game::Game()
     gWindow = SDL_CreateWindow("MDA", 
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
             SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
-    new Menu(gWindow);
-
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderTarget(gRenderer, NULL);
+
+    std::string pictPath;
+    int pieceIndex = 0;
+    new Menu(gWindow, gRenderer, &pictPath, &pieceIndex);
+    int rows = 0, 
+        cols = 0;
+    if (pieceIndex == 0) {
+        rows = 5;
+        cols = 7;
+    }
+    else if (pieceIndex == 1) {
+        rows = 7;
+        cols = 8;
+    }
+    else if (pieceIndex == 2) {
+        rows = 10;
+        cols = 12;
+    }
+
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+    setTiles(pictPath, rows, cols);
+    puzzle();
 }
