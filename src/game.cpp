@@ -17,13 +17,11 @@ void Game::setTiles(std::string image, int row, int col)
 
     if (surf == nullptr)
         std::cout << IMG_GetError() << std::endl;
-    else
-        std::cout << "Tiling image" << std::endl;
 
     this->clipPerRow = row;
     this->clipPerColumn = col;
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(gRenderer, surf);
+    SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(gRenderer, surf);
     SDL_FreeSurface(surf);
 
     int textureWidth = IMAGE_WIDTH / this->clipPerRow;
@@ -43,8 +41,8 @@ void Game::setTiles(std::string image, int row, int col)
                         SDL_TEXTUREACCESS_TARGET, 
                         IMAGE_WIDTH / this->clipPerRow, 
                         IMAGE_HEIGHT / this->clipPerColumn);
-
             SDL_SetTextureBlendMode(clip, SDL_BLENDMODE_BLEND);
+
             SDL_Rect rect = { 
                 i * IMAGE_WIDTH / this->clipPerRow, 
                 j * IMAGE_HEIGHT / this->clipPerColumn, 
@@ -53,19 +51,17 @@ void Game::setTiles(std::string image, int row, int col)
             };
 
             SDL_SetRenderTarget(gRenderer, clip);
-            SDL_RenderCopy(gRenderer, texture, &rect, NULL);
+            SDL_RenderCopy(gRenderer, imageTexture, &rect, NULL);
 
-            int x = randX(gen),
-                y = randY(gen);
-            rect.x = x;
-            rect.y = y;
+            rect.x = randX(gen);
+            rect.y = randY(gen);
 
             this->tiles.push_back(new Tile(clip, rect));
 
         }
     }
 
-    std::cout << "Tiling complete" << std::endl;
+	SDL_DestroyTexture(imageTexture);
 }
 
 void Game::drawPuzzle()
@@ -128,22 +124,25 @@ Game::Game()
     new Menu(gWindow, gRenderer, &pictPath, &pieceIndex);
     int rows = 0, 
         cols = 0;
-    if (pieceIndex == 0) {
-        rows = 5;
-        cols = 7;
-    }
-    else if (pieceIndex == 1) {
-        rows = 7;
-        cols = 8;
-    }
-    else if (pieceIndex == 2) {
-        rows = 10;
-        cols = 12;
-    }
+	if (pieceIndex != -1) {
 
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(gRenderer);
+        if (pieceIndex == 0) {
+            rows = 5;
+            cols = 7;
+        }
+        else if (pieceIndex == 1) {
+            rows = 7;
+            cols = 8;
+        }
+        else if (pieceIndex == 2) {
+            rows = 10;
+            cols = 12;
+        }
 
-    setTiles(pictPath, rows, cols);
-    puzzle();
+	    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	    SDL_RenderClear(gRenderer);
+
+        setTiles(pictPath, rows, cols);
+        puzzle();
+    }
 }

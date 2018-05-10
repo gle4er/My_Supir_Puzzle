@@ -39,18 +39,14 @@ action Handler::getPuzzleHandle()
                     yLow = area.y,
                     yHigh = area.y + area.h;
 
-                if (xLow < x && x < xHigh) {
-                    if (yLow < y && y < yHigh) {
+                if (xLow < x && x < xHigh)
+                    if (yLow < y && y < yHigh)
                         movedTile = i;
-                        break;
-                    }
-                }
             }
         }
 
-        if (e.type == SDL_MOUSEBUTTONUP) {
+        if (e.type == SDL_MOUSEBUTTONUP) 
             movedTile = -1; 
-        }
 
     }
     return UNDEFINED;
@@ -69,20 +65,20 @@ action Handler::getMenuHandle()
             int x, y; 
             SDL_GetMouseState(&x, &y);
             std::cout << x << " " << y << std::endl;
-            if (30 < x && x < 35 &&
-                250 < y && y < 275)
+            if (30 <= x && x <= 45 &&
+                250 <= y && y <= 275)
                 return PICT_CH_BACK;
-            else if (300 < x && x < 305 &&
-                    250 < y && y < 275)
+            else if (300 <= x && x <= 315 &&
+                    250 <= y && y <= 275)
                 return PICT_CH_FRONT;
-            else if (580 < x && x < 585 &&
-                    250 < y && y < 275)
+            else if (580 <= x && x <= 595 &&
+                    250 <= y && y <= 275)
                 return PIE_CH_BACK;
-            else if (640 < x && x < 645 &&
-                    250 < y && y < 275)
+            else if (640 <= x && x <= 655 &&
+                    250 <= y && y <= 275)
                 return PIE_CH_FRONT;
-            else if (380 < x && x < 420 &&
-                    450 < y && y < 480)
+            else if (380 <= x && x <= 445 &&
+                    450 < y && y < 475)
                 return START;
         }
 

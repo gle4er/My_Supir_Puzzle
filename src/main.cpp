@@ -3,6 +3,6 @@
 
 int main()
 {
-    Game *game = new Game();
-    delete game;
+    new Game();
+    return 0;
 }

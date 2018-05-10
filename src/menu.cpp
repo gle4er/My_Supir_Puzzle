@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -20,9 +19,11 @@ void Menu::makeTitle(std::string title, int posX, int posY)
         posX, posY, 
         msgSurf->w, msgSurf->h
     };
-    SDL_FreeSurface(msgSurf);
     SDL_RenderCopy(mRenderer, pictMsg, NULL, &msgRect);
+
+    SDL_FreeSurface(msgSurf);
     SDL_DestroyTexture(pictMsg);
+	TTF_CloseFont(font);
 }
 
 void Menu::makePict(std::string path, int posX, int posY)
@@ -35,8 +36,8 @@ void Menu::makePict(std::string path, int posX, int posY)
         170,
         170
     };
-    SDL_FreeSurface(surf);
     SDL_RenderCopy(mRenderer, picture, NULL, &pictRect);
+    SDL_FreeSurface(surf);
     SDL_DestroyTexture(picture);
 }
 
@@ -102,8 +103,10 @@ void Menu::menu()
             exit = true;
         }
 
-        else if (rc == EXIT)
-            exit = true;
+		else if (rc == EXIT) {
+			*pieces = -1;
+			exit = true;
+		}
 
         SDL_Delay(32);
     }
@@ -112,7 +115,7 @@ void Menu::menu()
 
 Menu::~Menu()
 {
-    SDL_DestroyRenderer(mRenderer);
+	TTF_Quit();
 }
 
 Menu::Menu(SDL_Window *_gWindow, SDL_Renderer *_gRendrer, 
@@ -120,7 +123,6 @@ Menu::Menu(SDL_Window *_gWindow, SDL_Renderer *_gRendrer,
     gWindow(_gWindow), mRenderer(_gRendrer), 
     pictPath(_pictPath), pieces(_pieces)
 {
-    if (TTF_Init() == -1)
-        std::cout << "SDL_ttf Error: " << TTF_GetError();
+    TTF_Init();
     menu();
 }
